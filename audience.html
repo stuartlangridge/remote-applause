@@ -163,6 +163,7 @@ var retryTimer = 1;
 var messages = document.getElementById("messages");
 var rti = null;
 var checkConnectionI;
+var latest_error = "";
 
 function connect() {
     clearInterval(rti);
@@ -174,7 +175,7 @@ function connect() {
         }
         retryTimer *= 2;
         if (retryTimer > 30) retryTimer = 30;
-        messages.innerHTML = "Connection problems. Reconnecting in <span>" + retryTimer + "</span> seconds...";
+        messages.innerHTML = "Connection problems" + latest_error + ". Reconnecting in <span>" + retryTimer + "</span> seconds...";
         var buttons = document.getElementById("buttons");
         buttons.innerHTML = "";
         var rt = retryTimer;
@@ -207,15 +208,18 @@ function connect() {
     peer.on('error', function(err) {
         console.log("audience peer error connecting to server", err.type, err);
         peer.destroy();
+        latest_error = " (with the server)"
         retry();
     });
     peer.on('disconnected', function() {
         console.log("audience peer disconnected from server");
+        latest_error = " (we lost the server connection)"
         peer.destroy();
         retry();
     });
     peer.on('close', function() {
         console.log("audience: I am destroyed");
+        latest_error = " (everything collapsed, sorry)"
         retry();
     });
 
@@ -229,6 +233,7 @@ function connect() {
             conn.peerConnection.connectionState != "connecting") {
             console.log("Connection seems to have dropped (state is", conn.peerConnection.connectionState, ". Forcing reconnection!");
             clearInterval(checkConnectionI);
+            latest_error = " (with the network)"
             retry();
         }
     }, 3000);
@@ -239,6 +244,7 @@ function connect() {
     });
     conn.on('close', function() {
         console.log("audience disconnected from stage; retrying");
+        latest_error = " (we can't see the presenter)"
         retry();
     });
     conn.on('error', function(err) {

@@ -223,15 +223,18 @@ function connect() {
             return;
         }
         peer.destroy();
+        latest_error = " (seeing the server)"
         retry();
     });
     peer.on('disconnected', function() {
         console.log("stage peer disconnected from server");
         peer.destroy();
+        latest_error = " (with the connection to the server)"
         retry();
     });
     peer.on('close', function() {
         console.log("stage: I am destroyed");
+        latest_error = " (everything fell apart)"
         retry();
     });
     peer.on('connection', function(conn) {
