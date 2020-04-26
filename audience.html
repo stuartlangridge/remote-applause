@@ -153,7 +153,7 @@ if (conf == "") {
     location.href = "index.html";
 } else {
     var usp = new URLSearchParams(window.location.search);
-    conf = params.get('c');
+    conf = usp.get('c');
 }
 document.querySelector("output").textContent = "for " + conf;
 var confid = "rapp" + Math.abs(hasher(conf));
