@@ -6,6 +6,7 @@
 <title>Remote Applause stage</title>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@600&family=Merriweather&display=swap" rel="stylesheet">
 <style>
+html, body { margin: 0; padding: 0; }
 #nojs-warning { opacity: 0; color: red; animation: fadein 250ms ease-out; animation-delay: 3000ms; }
 body.js #nojs-warning { animation: none; display: none; }
 @keyframes fadein { from { opacity: 0; display: block; } to { opacity: 1; } }
@@ -18,8 +19,13 @@ body {
     font-family: Merriweather, serif;
     color: #f1f2f3;
 }
-h1 { font-family: "Fira Sans"; text-align: center; }
-#messages { color: #ee9; }
+h1 {
+    font-family: "Fira Sans";
+    text-align: center;
+    margin: 0;
+    padding: 1em;
+}
+#messages { color: #ee9; margin: 1em; }
 #credits { display: none; }
 .box {
     background: rgba(0,0,0,0.7);
@@ -111,9 +117,10 @@ function update() {
 
 var conf = location.search;
 if (conf == "") {
-    conf = "testing";
+    location.href = "index.html";
 } else {
-    conf = decodeURIComponent(conf.substr(1)).replace(/^c=/, "");
+    var usp = new URLSearchParams(window.location.search);
+    conf = params.get('c');
 }
 document.querySelector("output").textContent = conf;
 
@@ -208,6 +215,11 @@ function connect() {
     });
     peer.on('error', function(err) {
         console.log("stage peer error connecting to server", err.type);
+        if (err.type == "unavailable-id") {
+            alert("Apologies. That conference name is already being used; you can't have two stages with the same name open at once. Please choose another.");
+            location.href = "index.html";
+            return;
+        }
         peer.destroy();
         retry();
     });

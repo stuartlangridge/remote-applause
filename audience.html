@@ -6,6 +6,7 @@
 <title>Remote Applause</title>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@600&family=Merriweather&display=swap" rel="stylesheet">
 <style>
+html, body { margin: 0; padding: 0; }
 #nojs-warning { opacity: 0; color: red; animation: fadein 250ms ease-out; animation-delay: 3000ms; }
 body.js #nojs-warning { animation: none; display: none; }
 @keyframes fadein { from { opacity: 0; display: block; } to { opacity: 1; } }
@@ -19,9 +20,15 @@ body {
     font-family: Merriweather, serif;
     color: #f1f2f3;
 }
-h1 { font-family: "Fira Sans"; text-align: center; }
+h1 {
+    font-family: "Fira Sans";
+    text-align: center;
+    margin: 0;
+    padding: 1em;
+}
 #messages {
     color: #ee9;
+    margin: 1em;
 }
 
 #buttons {
@@ -89,7 +96,6 @@ div.indicator img {
     80% { transform: translateX(13.5%); }
     100% { transform: translateX(0); }
 }
-#credits { display: none; }
 </style>
 </head>
 <body>
@@ -101,9 +107,6 @@ div.indicator img {
         on may help; if not, then refreshing this page may help. Sorry about that.</div>
 </div>
 <div id="buttons"></div>
-<div id="credits">https://freesound.org/people/daehedon/sounds/340355/
-    All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0
-</div>
 
 <script src="https://unpkg.com/peerjs@1.0.0/dist/peerjs.min.js"></script>
 <script>
@@ -147,9 +150,10 @@ function showLaugh() {
 
 var conf = location.search;
 if (conf == "") {
-    conf = "testing";
+    location.href = "index.html";
 } else {
-    conf = decodeURIComponent(conf.substr(1)).replace(/^c=/, "");
+    var usp = new URLSearchParams(window.location.search);
+    conf = params.get('c');
 }
 document.querySelector("output").textContent = "for " + conf;
 var confid = "rapp" + Math.abs(hasher(conf));

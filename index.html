@@ -6,10 +6,7 @@
 <title>Remote Applause</title>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@600&family=Merriweather&display=swap" rel="stylesheet">
 <style>
-#nojs-warning { opacity: 0; color: red; animation: fadein 250ms ease-out; animation-delay: 3000ms; }
-body.js #nojs-warning { animation: none; display: none; }
-@keyframes fadein { from { opacity: 0; display: block; } to { opacity: 1; } }
-
+html, body { margin: 0; padding: 0; }
 
 body {
     background: url(conference.jpg) center center black;
@@ -19,9 +16,15 @@ body {
     font-family: Merriweather, serif;
     color: #f1f2f3;
 }
-h1 { font-family: "Fira Sans"; text-align: center; }
+h1 {
+    font-family: "Fira Sans";
+    text-align: center;
+    margin: 0;
+    padding: 1em;
+}
 #messages {
     color: #ee9;
+    margin: 1em;
 }
 
 .box {
@@ -56,7 +59,9 @@ input {
     </form>
     </form>
     <p>If you're here to <em>attend</em> an online conference with remote applause, then you don't want to be here:
-    you need to ask your conference speaker or organiser for the link for the session you're attending.</div>
+    you need to ask your conference speaker or organiser for the link for the session you're attending.</p>
+</div>
+
 <div id="credits" class="box">Sounds and imagery from <a href="https://freesound.org/people/daehedon/sounds/340355/">dahedon/freesound</a>,
     <a href="https://openmoji.org/">OpenMoji</a>, Wikimedia Commons 
     <a href="https://commons.wikimedia.org/wiki/File:Metropolitan_Opera_House,_a_concert_by_pianist_Josef_Hofmann_-_NARA_541890_-_Edit.jpg">1</a>
