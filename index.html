@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<title>Remote Applause</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@600&family=Merriweather&display=swap" rel="stylesheet">
+<style>
+#nojs-warning { opacity: 0; color: red; animation: fadein 250ms ease-out; animation-delay: 3000ms; }
+body.js #nojs-warning { animation: none; display: none; }
+@keyframes fadein { from { opacity: 0; display: block; } to { opacity: 1; } }
+
+
+body {
+    background: url(conference.jpg) center center black;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100vh;
+    font-family: Merriweather, serif;
+    color: #f1f2f3;
+}
+h1 { font-family: "Fira Sans"; text-align: center; }
+#messages {
+    color: #ee9;
+}
+
+.box {
+    background: rgba(0,0,0,0.7);
+    border: 3px solid white;
+    box-sizing: border-box;
+    width: 90%;
+    padding: 30px;
+    margin-left: 5%;
+    margin-top: 2em;
+}
+input {
+    font-size: 2em;
+}
+#credits {
+    margin-top: 10em;
+    border-width: 0;
+    opacity: 0.5;
+    position: absolute;
+    bottom: 10px;
+}
+#credits a { color: white; }
+</style>
+</head>
+<body>
+<h1>Remote Applause</h1>
+<div class="box">
+    <p>If you're here to set up <strong>remote applause</strong> for your online conference, enter its name below!</p>
+    <form action="stage.html">
+        <input name="c" autofocus>
+        <input type="submit" value="Give me remote applause!">
+    </form>
+    </form>
+    <p>If you're here to <em>attend</em> an online conference with remote applause, then you don't want to be here:
+    you need to ask your conference speaker or organiser for the link for the session you're attending.</div>
+<div id="credits" class="box">Sounds and imagery from <a href="https://freesound.org/people/daehedon/sounds/340355/">dahedon/freesound</a>,
+    <a href="https://openmoji.org/">OpenMoji</a>, Wikimedia Commons 
+    <a href="https://commons.wikimedia.org/wiki/File:Metropolitan_Opera_House,_a_concert_by_pianist_Josef_Hofmann_-_NARA_541890_-_Edit.jpg">1</a>
+    <a href="https://commons.wikimedia.org/wiki/File:De_Rika_Jansen_One_Woman_Show_in_Rembrandttheater,_Rika_Jansen_in_haar_show,_Bestanddeelnr_916-6526.jpg">2</a>
+    <a href="https://commons.wikimedia.org/w/index.php?title=File%3A72843_lonemonk_approx-800-laughter-only-1.wav">3</a>,
+    <a href="https://www.flickr.com/photos/stevebaty/34725313815">stevebaty/flickr</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<title>Remote Applause</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@600&family=Merriweather&display=swap" rel="stylesheet">
+<style>
+#nojs-warning { opacity: 0; color: red; animation: fadein 250ms ease-out; animation-delay: 3000ms; }
+body.js #nojs-warning { animation: none; display: none; }
+@keyframes fadein { from { opacity: 0; display: block; } to { opacity: 1; } }
+
+
+body {
+    background: url(stage.jpg) center center black;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100vh;
+    font-family: Merriweather, serif;
+    color: #f1f2f3;
+}
+h1 { font-family: "Fira Sans"; text-align: center; }
+#messages {
+    color: #ee9;
+}
+
+#buttons {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    padding: 1vh;
+    box-sizing: border-box;
+}
+#buttons button {
+    width: 80%;
+    margin-left: 10%;
+    margin-top: 1vh;
+    border-radius: 9px;
+    border: 5px solid #eaa;
+    background-color: rgba(0, 0, 0, 0.7);
+    font-size: 6vh;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+#btnClap {
+    text-indent: -1000em;
+    background-image: url("claps/1F44F.svg");
+}
+#btnLaugh {
+    text-indent: -1000em;
+    background-image: url("1F602.svg");
+}
+@media screen and (min-width: 600px) {
+    #buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+    #buttons button {
+        width: 40%;
+        margin: 0;
+    }
+}
+
+div.indicator {
+    position: absolute;
+    bottom: 50px;
+    transition: all 3s ease-out;
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: none;
+}
+div.indicator img {
+    position: absolute;
+    top: 0;
+    animation: wiggle 700ms linear infinite;
+    width: 3vw;
+    height: 3vw;
+}
+@keyframes wiggle {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-13.5%); }
+    25% { transform: translateX(-15%); }
+    30% { transform: translateX(-13.5%); }
+    50% { transform: translateX(0); }
+    70% { transform: translateX(13.5%); }
+    75% { transform: translateX(15%); }
+    80% { transform: translateX(13.5%); }
+    100% { transform: translateX(0); }
+}
+#credits { display: none; }
+</style>
+</head>
+<body>
+<h1>Remote Applause <output></output></h1>
+<div id="messages">
+    loading...
+    <div id="nojs-warning">Unfortunately, this service requires JavaScript, which
+        does not seem to be available. If you have it turned off then turning it
+        on may help; if not, then refreshing this page may help. Sorry about that.</div>
+</div>
+<div id="buttons"></div>
+<div id="credits">https://freesound.org/people/daehedon/sounds/340355/
+    All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0
+</div>
+
+<script src="https://unpkg.com/peerjs@1.0.0/dist/peerjs.min.js"></script>
+<script>
+console.clear();
+var CLAPS = [
+    "claps/1F44F-1F3FB.svg",
+    "claps/1F44F-1F3FD.svg",
+    "claps/1F44F-1F3FF.svg",
+    "claps/1F44F-1F3FC.svg",
+    "claps/1F44F-1F3FE.svg"
+];
+
+function hasher(inp) { var hash = 0; if (inp.length == 0) { return hash; }
+    for (var i = 0; i < inp.length; i++) { var char = inp.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char; hash = hash & hash; } return hash; }
+
+function showItem(url) {
+    var img = document.createElement("img");
+    var div = document.createElement("div");
+    div.className = "indicator";
+    img.style.left = ((Math.random() * 80) + 10) + "vw";
+    div.addEventListener("transitionend", function() {
+        //console.log("removing", div);
+        div.remove();
+    })
+    div.appendChild(img);
+    document.body.appendChild(div);
+    var up = (Math.random() * 50) + 25;
+    //console.log("creating", img);
+    img.src = url;
+    img.offsetWidth; // wait until layout is done, otherwise the transition gets ignored
+    div.style.transform = "translateY(-" + up + "vh)";
+    div.style.opacity = 0;
+}
+function showClap() {
+    showItem(CLAPS[Math.floor(Math.random() * CLAPS.length)]);
+}
+function showLaugh() {
+    showItem("1F602.svg");
+}
+
+var conf = location.search;
+if (conf == "") {
+    conf = "testing";
+} else {
+    conf = decodeURIComponent(conf.substr(1)).replace(/^c=/, "");
+}
+document.querySelector("output").textContent = "for " + conf;
+var confid = "rapp" + Math.abs(hasher(conf));
+var retryTimer = 1;
+var messages = document.getElementById("messages");
+var rti = null;
+var checkConnectionI;
+
+function connect() {
+    clearInterval(rti);
+
+    function retry() {
+        if (rti !== null) {
+            console.log("already retrying, so not retrying again", rti);
+            return;
+        }
+        retryTimer *= 2;
+        if (retryTimer > 30) retryTimer = 30;
+        messages.innerHTML = "Connection problems. Reconnecting in <span>" + retryTimer + "</span> seconds...";
+        var buttons = document.getElementById("buttons");
+        buttons.innerHTML = "";
+        var rt = retryTimer;
+        rti = setInterval(function() {
+            console.log("waiting to actually do a retry")
+            rt -= 1;
+            if (rt == 0) {
+                clearInterval(rti);
+                console.log("ending retry with rti", rti);
+                rti = null;
+                connect();
+                return;
+            }
+            var spans = messages.getElementsByTagName("span");
+            if (spans.length > 0) {
+                spans[0].textContent = rt;
+            } else {
+                // our span has disappeared; someone's overwritten the messages div
+            }
+        }, 1000);
+        console.log("kicking off retry with rti", rti, "and times", retryTimer);
+    }
+
+    var peer = new Peer();
+    peer.on('open', function(id) {
+        console.log("audience peer connected to server with ID", id);
+        messages.textContent = "Waiting for presenter...";
+        retryTimer = 1;
+    });
+    peer.on('error', function(err) {
+        console.log("audience peer error connecting to server", err.type, err);
+        peer.destroy();
+        retry();
+    });
+    peer.on('disconnected', function() {
+        console.log("audience peer disconnected from server");
+        peer.destroy();
+        retry();
+    });
+    peer.on('close', function() {
+        console.log("audience: I am destroyed");
+        retry();
+    });
+
+    var conn = peer.connect(confid);
+
+    // Firefox gets conn.on("close") events. Chrome doesn't. So we check the state
+    // frequently ourselves and reconnect if the peerConnection has gone away.
+    checkConnectionI = setInterval(function() {
+        if (conn.peerConnection && conn.peerConnection.connectionState !== undefined && 
+            conn.peerConnection.connectionState != "connected" && conn.peerConnection.connectionState != "new" &&
+            conn.peerConnection.connectionState != "connecting") {
+            console.log("Connection seems to have dropped (state is", conn.peerConnection.connectionState, ". Forcing reconnection!");
+            clearInterval(checkConnectionI);
+            retry();
+        }
+    }, 3000);
+
+
+    conn.on('open', function() {
+        console.log("audience connected to stage");
+    });
+    conn.on('close', function() {
+        console.log("audience disconnected from stage; retrying");
+        retry();
+    });
+    conn.on('error', function(err) {
+        console.log("audience to stage connection error", err);
+    });
+    conn.on('data', function(data) {
+        console.log("audience from stage, data:", data);
+        if (data == "readyForClaps") {
+            messages.textContent = "";
+            var buttons = document.getElementById("buttons");
+            buttons.innerHTML = "";
+            var btnClap = document.createElement("button");
+            btnClap.id = "btnClap";
+            btnClap.textContent = "clap";
+            btnClap.onclick = function() { conn.send("clap"); }
+            buttons.appendChild(btnClap);
+            var btnLaugh = document.createElement("button");
+            btnLaugh.id = "btnLaugh";
+            btnLaugh.textContent = "laugh";
+            btnLaugh.onclick = function() { conn.send("laugh"); }
+            buttons.appendChild(btnLaugh);
+        } else if (data == "pauseClaps") {
+            var buttons = document.getElementById("buttons");
+            buttons.innerHTML = "";
+            messages.textContent = "waiting for presenter...";
+        } else if (data == "clap") {
+            showClap();
+        } else if (data == "laugh") {
+            showLaugh();
+        }
+    });
+}
+
+document.body.className = "js";
+connect();
+
+</script>
+</body>
+</html>
