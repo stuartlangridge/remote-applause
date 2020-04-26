@@ -212,6 +212,7 @@ function connect() {
         messages.textContent = "";
         retryTimer = 1;
         CONNECTIONS = {};
+        update();
     });
     peer.on('error', function(err) {
         console.log("stage peer error connecting to server", err.type);
