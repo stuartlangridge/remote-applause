@@ -1,6 +1,6 @@
 # Remote Applause
 
-Add remote applause to your online conference.
+Add remote applause to your online conference. [Try it.](https://stuartlangridge.github.io/remote-applause)
 
 You go to the page and add your conf name; it gives you a link; you give the link to attendees; they get a "clap" button to press; when they press it, your window plays the noise of clapping.
 
