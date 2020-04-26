@@ -180,6 +180,7 @@ function sendNext() {
 
 
 function connect() {
+    document.getElementById("audience").value = "(don't know, connecting)";
     function retry() {
         if (rti !== null) {
             console.log("already retrying, so not retrying again", rti);
